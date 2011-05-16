@@ -1,6 +1,6 @@
 { "name"          : "csvutils",
   "description"   : "A collection of CSV utilities",
-  "version"       : "0.1.0",
+  "version"       : "0.1.1",
   "homepage"      : "https://github.com/chriso/csvutils",
   "author"        : "Chris O'Hara <cohara87@gmail.com>",
   "bugs": {

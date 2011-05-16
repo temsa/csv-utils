@@ -6,7 +6,7 @@ cli.parse({
       desc: ['d', 'Output in descending order'],
    numeric: ['n', 'Use numeric sort'],
     header: ['e', 'Ignore the first header line']
-}, ['peek','sort','extract','unique']);
+}, ['peek','sort','extract','unique','unshift','push']);
 
 var line_no = 0, elements = {}, sort = [],
     arg = cli.args.length ? cli.args[0] : null;
@@ -50,7 +50,14 @@ io.start(new io.Job({
                 arg = 0;
             }
             return this.emit(line[arg]);
+        case 'unshift':
+            line.unshift(arg);
+            break;
+        case 'push':
+            line.push(arg);
+            break;
         }
+        this.emit(this.writeValues(line));
     },
 
     complete: function () {

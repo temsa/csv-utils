@@ -38,6 +38,16 @@ To see distinct column values from `col_no`
 
     $ cat input.csv | csv extract col_no | csv unique
 
+**Adding elements**
+
+To the start of each line
+
+    $ csv unshift element < input.csv
+
+To the end of each line
+
+    $ csv push element < input.csv
+
 **Ignoring a header line**
 
 Use the `--header` switch.
