@@ -1,0 +1,27 @@
+{ "name"          : "csvutils",
+  "description"   : "A collection of CSV utilities",
+  "version"       : "0.1.0",
+  "homepage"      : "https://github.com/chriso/csvutils",
+  "author"        : "Chris O'Hara <cohara87@gmail.com>",
+  "bugs": {
+    "mail": "cohara87@gmail.com",
+    "web": "http://github.com/chriso/csvutils/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/chriso/csvutils.git"
+  },
+  "engines": { "node": ">= 0.4.0" },
+  "dependencies": {
+    "node.io": ">= 0.2.9",
+    "cli": ">= 0.3.0"
+  },
+  "preferGlobal": true,
+  "bin": {
+    "csv": "./bin/csv"
+  },
+  "licenses": [{
+    "type": "MIT",
+    "url": "http://github.com/chriso/csvutils/raw/master/LICENSE"
+  }]
+}

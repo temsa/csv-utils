@@ -1,0 +1,74 @@
+#!/usr/bin/env node
+
+var cli = require('cli'), io = require('node.io');
+
+cli.parse({
+      desc: ['d', 'Output in descending order'],
+   numeric: ['n', 'Use numeric sort'],
+    header: ['e', 'Ignore the first header line']
+}, ['peek','sort','extract','unique']);
+
+var line_no = 0, elements = {}, sort = [],
+    arg = cli.args.length ? cli.args[0] : null;
+
+io.start(new io.Job({
+    run: function (line) {
+        if (cli.options.header && line_no === 0 && cli.command !== 'extract') {
+            if (cli.command === 'peek') {
+                return this.skip();
+            } else {
+                return this.emit(line);
+            }
+        }
+
+        line_no++;
+        line = this.parseValues(line);
+
+        switch (cli.command) {
+        case 'peek':
+            if (line_no <= 1) {
+                if (arg && typeof line[arg] !== 'undefined') {
+                    return this.emit(arg + ': ' + line[arg].replace(/[\r\n]/g, ' '));
+                }
+                var lines = [], n = 0;
+                line.forEach(function (elem) {
+                    lines.push(n++ + ': ' + elem.replace(/[\r\n]/g, ' '));
+                });
+                return this.emit(lines.join('\n'));
+            }
+            return this.finish();
+        case 'sort':
+        case 'unique':
+            if (!arg || typeof line[arg] === 'undefined') {
+                arg = 0;
+            }
+            elements[line[arg]] = line;
+            sort.push(line[arg]);
+            return this.skip();
+        case 'extract':
+            if (!arg || typeof line[arg] === 'undefined') {
+                arg = 0;
+            }
+            return this.emit(line[arg]);
+        }
+    },
+
+    complete: function () {
+        var self = this;
+        if (cli.command === 'unique') {
+            for (var n in elements) {
+                console.log(this.writeValues(elements[n]));
+            }
+        } else if (cli.command === 'sort') {
+            sort.sort(!cli.options.numeric ? null : function(a, b) {
+                return parseInt(a) > parseInt(b);
+            });
+            if (cli.options.desc) {
+                sort = sort.reverse();
+            }
+            sort.forEach(function (n) {
+                console.log(self.writeValues(elements[n]));
+            });
+        }
+    }
+}));
