@@ -6,7 +6,7 @@ cli.parse({
       desc: ['d', 'Output in descending order'],
    numeric: ['n', 'Use numeric sort'],
     header: ['e', 'Ignore the first header line']
-}, ['peek','sort','extract','unique','unshift','push']);
+}, ['peek','sort','extract','unique','unshift','push','slice','insert','replace', 'count','eval']);
 
 var line_no = 0, elements = {}, sort = [],
     arg = cli.args.length ? cli.args[0] : null;
@@ -37,45 +37,82 @@ io.start(new io.Job({
                 return this.emit(lines.join('\n'));
             }
             return this.finish();
-        case 'sort':
-        case 'unique':
-            if (!arg || typeof line[arg] === 'undefined') {
-                arg = 0;
-            }
-            elements[line[arg]] = line;
-            sort.push(line[arg]);
-            return this.skip();
         case 'extract':
-            if (!arg || typeof line[arg] === 'undefined') {
-                arg = 0;
+            var elems = [];
+            if (!cli.args.length) {
+                cli.args = [0];
             }
-            return this.emit(line[arg]);
+            cli.args.forEach(function (n) {
+                elems.push(line[n]);
+            });
+            line = elems;
+            break;
         case 'unshift':
             line.unshift(arg);
             break;
         case 'push':
             line.push(arg);
             break;
+        case 'slice':
+            if (cli.args.length > 1 && line_no < cli.args[0]) {
+                return this.skip();
+            }
+            if (cli.args.length == 2 && line_no > cli.args[1]) {
+                return this.skip();
+            }
+            break;
+        case 'insert':
+            line.splice(cli.args[0], 0, cli.args[1] || '');
+            break;
+        case 'replace':
+            line[cli.args[0]] = cli.args[1] || '';
+            break;
+        case 'count':
+            return this.skip();
+        case 'eval':
+            if (cli.args.length === 1) {
+                cli.args.unshift(0);
+            }
+            (function (column) {
+                try {
+                    line[cli.args[0]] = eval(cli.args[1]);
+                } catch (e){}
+            }(line[cli.args[0]]));
+            break;
+        default:
+            if (!arg || typeof line[arg] === 'undefined') {
+                arg = 0;
+            }
+            elements[line[arg]] = line;
+            sort.push(line[arg]);
+            return this.skip();
         }
         this.emit(this.writeValues(line));
     },
 
     complete: function () {
         var self = this;
+        if (cli.command === 'count') {
+            return console.log(line_no);
+        }
         if (cli.command === 'unique') {
             for (var n in elements) {
                 console.log(this.writeValues(elements[n]));
             }
+            return;
         } else if (cli.command === 'sort') {
             sort.sort(!cli.options.numeric ? null : function(a, b) {
                 return parseInt(a) > parseInt(b);
             });
-            if (cli.options.desc) {
-                sort = sort.reverse();
-            }
-            sort.forEach(function (n) {
-                console.log(self.writeValues(elements[n]));
-            });
         }
+        if (sort.length === 0) {
+            return;
+        }
+        if (cli.options.desc) {
+            sort = sort.reverse();
+        }
+        sort.forEach(function (n) {
+            console.log(self.writeValues(elements[n]));
+        });
     }
 }));
