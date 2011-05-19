@@ -6,14 +6,26 @@ cli.parse({
       desc: ['d', 'Output in descending order'],
    numeric: ['n', 'Use numeric sort'],
     header: ['e', 'Ignore the first header line']
-}, ['peek','sort','extract','unique','unshift','push','slice','insert','replace', 'count','eval']);
+}, {
+    peek: 'See the contents of a certain line, "peek 1"',
+    sort: 'Sort the rows by the specified column number, e.g. "sort 2"',
+    extract: 'Extract a certain column, e.g. "extract 3"',
+    unique: 'Only output rows with a unique value for the specified column',
+    unshift: 'Add a column to the start of each row',
+    push: 'Add a column to the end of each row',
+    slice: 'Output a certain range of rows, e.g. "slice 1000 2000',
+    insert: 'Insert a column at the specified position, e.g. "insert 3 foo"',
+    replace: 'Replace a column with a value, e.g. "replace 0 foo"',
+    count: 'Count the number of rows',
+    eval: 'Run an expression on a certain column, e.g. "eval 1 column.replace(\',\',\'\')"'
+});
 
 var line_no = 0, elements = {}, sort = [],
     arg = cli.args.length ? cli.args[0] : null;
 
 io.start(new io.Job({
     run: function (line) {
-        if (cli.options.header && line_no === 0 && cli.command !== 'extract') {
+        if (cli.options.header && line_no == 0 && cli.command !== 'extract') {
             if (cli.command === 'peek') {
                 return this.skip();
             } else {
