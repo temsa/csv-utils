@@ -1,15 +1,15 @@
 { "name"          : "csvutils",
   "description"   : "A collection of CSV utilities",
   "version"       : "0.1.3",
-  "homepage"      : "https://github.com/chriso/csvutils",
+  "homepage"      : "https://github.com/chriso/csv-utils",
   "author"        : "Chris O'Hara <cohara87@gmail.com>",
   "bugs": {
     "mail": "cohara87@gmail.com",
-    "web": "http://github.com/chriso/csvutils/issues"
+    "web": "http://github.com/chriso/csv-utils/issues"
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/chriso/csvutils.git"
+    "url": "http://github.com/chriso/csv-utils.git"
   },
   "engines": { "node": ">= 0.4.0" },
   "dependencies": {
